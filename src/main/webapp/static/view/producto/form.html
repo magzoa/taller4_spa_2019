@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html ng-app="registroProducto">
+
+<head>
+<meta charset="UTF-8">
+<title>Registro de Producto</title>
+
+<!-- <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"> -->
+<script type="text/javascript" src="/spring_mvc_spa_s/static/js/angular/angular.js"></script>
+<link href="/spring_mvc_spa_s/static/css/materialize/iconos/index.css" rel="stylesheet">
+<link type="text/css" rel="stylesheet" href="/spring_mvc_spa_s/static/css/materialize/css/materialize.css" media="screen,projection"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+
+<script type="text/javascript">
+
+
+//inicializando el modulo   inport de otros modulos       
+angular.module("registroProducto",[]);
+
+//utilizando el modulo creado										//intermediario  tiene funciones de 
+																				//	comunicacion con el servidor
+angular.module("registroProducto").controller("productoController",function($scope,$http){ 
+	
+	//javaScript
+
+	$scope.registrar=function(producto){
+		
+$http.post("http://localhost:8080/spring_mvc_spa_s/productos",producto).success(function(data,status){
+	
+	//Vacia los input
+	delete $scope.producto;
+	
+	console.log('# Registrado con Exito #');
+	console.log(data);
+	console.log(status);
+	cargarProductos();
+	
+});	
+		
+	};
+	
+	
+var cargarProductos=function(){
+	$http.get("http://localhost:8080/spring_mvc_spa_s/productos").success(function(data,status){
+		//Pasamos el array de datos a productos
+	$scope.productos=data;	
+		console.log("#Consulta de datos#");
+	});
+};
+
+
+$scope.editar=function(producto){
+	//1f $scope.producto=angular.copy(producto);
+	//2f
+	$scope.producto=producto;
+	$scope.$watch(function(){
+	Materialize.updateTextFields();	
+	});
+};
+
+
+$scope.eliminar=function(producto){
+		
+	if(confirm("Desea eliminar el registro?")){
+	//si funciona
+	$http({method:'DELETE',url:'http://localhost:8080/spring_mvc_spa_s/productos/'+producto.id}).success(function(data,status){
+		
+		console.log('#Ingrese a eliminar#');
+					   //array
+		var posicion=$scope.productos.indexOf(producto);
+					   console.log(posicion);
+		$scope.productos.splice(posicion,1);
+		
+		
+	}).error(function(data,status){
+		console.log("Error");
+	});
+	
+	}//fin confirmación
+};
+
+	
+	
+	//invocar al metodo creado mas arriba
+	cargarProductos();
+	
+});
+
+
+
+
+</script>
+
+
+</head>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<body ng-controller="productoController">
+<div class="row">
+
+		<div class="col s3">
+		
+		
+		
+		</div>
+<div class="col s6">
+    <form class="card-panel">
+      <div class="row">
+        <div class="input-field col s6">
+          <i class="material-icons prefix">description</i>
+          <input id="descripcion" type="text" class="validate" ng-model="producto.descripcion">
+          <label for="descripcion">Descripción</label>
+        </div>
+        
+        
+        <div class="input-field col s6">
+          <i class="material-icons prefix">attach_money</i>
+          <input id="precio" type="number" class="validate" ng-model="producto.precio">
+          <label for="precio">Precio</label>
+        </div>
+        
+         <div class="input-field col s6">
+          <i class="material-icons prefix">date_range</i>
+          <input id="vencimiento" type="date" class="validate" ng-model="producto.fechaVencimiento">
+          <label class="active" for="vencimiento">Fecha Vencimiento</label>
+        </div>
+        
+         <div class="input-field col s6">
+          <input id="cantidad" type="number" class="validate" ng-model="producto.cantidad">
+          <label for="cantidad">Cantidad</label>
+        </div>
+      </div>
+    
+
+    
+      
+      
+
+      
+      
+      
+    </form>
+    <button class="btn waves-light" ng-click="registrar(producto)">Registrar
+    <i class="material-icons right">send</i>
+  </button>
+    </div>
+    
+      
+  </div>
+
+<!--    para ver el resultado en pantalla  -->
+
+    {{producto}}
+
+
+
+<div class="col s12">
+
+	<table class="striped">
+		
+		<thead>
+<!-- 		filas -->
+		<tr>
+<!-- 		columna del titulo -->
+		<th>Descripción</th>
+		<th>Precio</th>
+		<th>Cantidad</th>
+		<th>Fecha Vencimiento</th>
+		<th>Eliminar</th>
+		<th>Editar</th>
+		
+		</tr>  
+		
+		
+		</thead>
+		
+		<tbody>
+		
+		<tr ng-repeat="producto in productos">
+		
+		<td>{{producto.descripcion}}</td>
+		<td>{{producto.cantidad}}</td>
+		<td>{{producto.precio}}</td>
+		<td>{{producto.fechaVencimiento}}</td>
+		<td><a ng-click="eliminar(producto)"><i class="material-icons">delete</i></a></td>
+		<td><a ng-click="editar(producto)"><i class="material-icons">edit</i></a></td>
+		
+		</tr>
+		
+		
+		</tbody>
+		
+		
+		<tfoot></tfoot>
+		
+		
+		
+		
+		</table>
+
+
+</div>
+
+
+<!--Import jQuery before materialize.js-->
+<script type="text/javascript" src="/spring_mvc_spa_s/static/js/jquery.js"></script>
+<script type="text/javascript" src="/spring_mvc_spa_s/static/css/materialize/js/materialize.min.js"></script>
+<script type="text/javascript">
+
+$(document).ready(function() {
+});
+
+</script>
+
+
+</body>
+</html>

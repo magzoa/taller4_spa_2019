@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html ng-app="usuarioRegistro">
+
+<head>
+<meta charset="UTF-8">
+<title>Registro de Usuario</title>
+
+<!-- <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"> -->
+<script type="text/javascript" src="/spring_mvc_spa_s/static/js/angular/angular.js"></script>
+<link href="/spring_mvc_spa_s/static/css/materialize/iconos/index.css" rel="stylesheet">
+<link type="text/css" rel="stylesheet" href="/spring_mvc_spa_s/static/css/materialize/css/materialize.css" media="screen,projection"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+
+
+
+
+
+
+
+</head>
+
+
+
+
+
+
+<script type="text/javascript">
+
+
+angular.module("usuarioRegistro",[]);
+
+angular.module("usuarioRegistro").controller("usuarioController",function($scope,$http){
+	
+	$scope.app="Registro de Usuario";
+	$scope.registrar=function(usuario){
+		
+		
+		
+		
+		
+		$http.post("http://localhost:8080/spring_mvc_spa_s/usuarios",usuario).success(function(data,status){
+			console.log(data);
+			console.log(status);
+			delete $scope.usuario;
+			
+		}).error(function(error){
+			console.log(error);
+			
+		});
+		
+		cargarUsuarios();
+		
+	};
+	
+	
+	var cargarUsuarios=function(){
+		$http.get("http://localhost:8080/spring_mvc_spa_s/usuarios").success(function(data,status){
+			//Pasamos el array de datos a usuarios
+		$scope.usuarios=data;	
+			console.log("#Consulta de datos#");
+		});
+	};
+	
+	
+	$scope.editar=function(usuario){
+		
+		$scope.usuario=usuario;
+		
+		$scope.$watch(function(){
+			Materialize.updateTextFields();
+				
+		});
+		
+	}
+	
+	$scope.eliminar=function(usuario){
+		
+		if(confirm("Desea Eliminar el registro?")){
+			$http({method:'DELETE', url:'http://localhost:8080/spring_mvc_spa_s/usuarios/'+usuario.login}).success(function(data,status){
+					console.log(data);
+					console.log(status);
+					delete $scope.usuario;
+					//cargarUsuarios();
+					
+					var pos=$scope.usuarios.indexOf(usuario);
+					
+					$scope.usuarios.splice(pos,1);
+					
+					
+					
+					
+				}).error(function(error){
+					console.log(error);
+					
+				});
+			
+			//$http.DELETE("http://localhost:8080/spring_mvc_spa_s/usuarios/"+usuario.login).success(function(data,status){
+			//	console.log(data);
+			//	console.log(status);
+			//	delete $scope.usuario;
+			//	cargarUsuarios();
+			//}).error(function(error){
+			//	console.log(error);
+				
+			//});
+		}
+		
+	}
+	
+		
+		
+		//invocar al metodo creado mas arriba
+		cargarUsuarios();
+	
+	
+	
+	
+});
+
+
+
+
+</script>
+
+
+
+
+
+
+
+
+<body ng-controller="usuarioController">
+<div class="row">
+
+		<div class="col s3">
+		<h5 ng-bind="app"></h5>
+		</div>
+
+    <form class="col s6 card-panel">
+    
+      <div class="row">
+        <div class="input-field col s6">
+          <i class="material-icons prefix">user</i>
+          <input id="login" type="email" class="validate" ng-model="usuario.login">
+          <label for="login">Login</label>
+        </div>
+       
+        
+        <div class="input-field col s6">
+          <i class="material-icons prefix">attach_money</i>
+          <input id="name" type="text" class="validate" ng-model="usuario.name">
+          <label for="name">Nombre</label>
+        </div>
+        
+         <div class="input-field col s6">
+          <i class="material-icons prefix">date_range</i>
+          <input id="pass" type="password" class="validate" ng-model="usuario.password">
+          <label class="active" for="pass">Contraseña</label>
+        </div>
+        
+         
+      </div>
+       <button class="btn waves-light" ng-click="registrar(usuario)">Registrar
+    <i class="material-icons right">send</i>
+  </button>
+    </form>
+    <div class="col s3"></div>
+    
+  </div>
+{{usuario}}
+
+<div class="col s12">
+
+	<table class="striped">
+		
+		<thead>
+<!-- 		filas -->
+		<tr>
+<!-- 		columna del titulo -->
+		<th>Login</th>
+		<th>Nombre</th>
+		<th>Editar</th>
+		<th>Eliminar</th>
+		
+		</tr>  
+		
+		
+		</thead>
+		
+		<tbody>
+<!-- 		 ng-click="editar(usuario)" -->
+		<tr ng-repeat="usuario in usuarios">
+		
+		<td>{{usuario.login}}</td>
+		<td>{{usuario.name}}</td>
+		<td ><a ng-click="editar(usuario)"><i class="material-icons prefix">description</i></a></td>
+		<td ><a ng-click="eliminar(usuario)"><i class="material-icons prefix">description</i></a></td>
+		
+		</tr>
+		
+		
+		</tbody>
+		
+		
+		<tfoot></tfoot>
+		
+		
+		
+		
+		</table>
+
+
+</div>
+
+
+
+
+
+
+
+
+
+
+<!--Import jQuery before materialize.js-->
+<script type="text/javascript" src="/spring_mvc_spa_s/static/js/jquery.js"></script>
+<script type="text/javascript" src="/spring_mvc_spa_s/static/css/materialize/js/materialize.min.js"></script>
+<script type="text/javascript">
+
+$(document).ready(function() {
+});
+
+</script>
+
+
+
+
+
+
+
+</body>
+</html>
